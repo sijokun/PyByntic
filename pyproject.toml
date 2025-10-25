@@ -6,13 +6,13 @@ authors = ["Yan Khachko <a@slnk.icu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
+python = "^3.10"
 pydantic = "^2.0.0"
 leb128 = "^1.0.8"
 typing-extensions = "^4.13.0"
 
 
 [tool.poetry.group.dev.dependencies]
-python = "^3.10"
 black = "^23.7.0"
 poethepoet = "^0.21.1"
 pytest = "^7.4.0"
