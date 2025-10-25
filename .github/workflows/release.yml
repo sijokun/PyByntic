@@ -1,0 +1,26 @@
+name: Upload Python Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+      - name: Run image
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.4.2
+      - name: Install project
+        run: poetry install
+      - name: Config PYPI_API_TOKEN
+        run: poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+      - name: Build
+        run: poetry build
+      - name: Publish
+        run: poetry publish

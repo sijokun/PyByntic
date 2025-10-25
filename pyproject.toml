@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "PyByntic"
+version = "0.1.0"
+description = "PyByntic extends Pydantic with binary-typed fields and automatic byte-level serialization. Define models using familiar Pydantic syntax and turn them into compact binary payloads with full control over layout and numeric precision."
+authors = ["Yan Khachko <a@slnk.icu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pydantic = "^2.0.0"
+leb128 = "^1.0.8"
+typing-extensions = "^4.13.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+poethepoet = "^0.21.1"
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
