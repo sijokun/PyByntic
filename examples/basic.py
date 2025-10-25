@@ -1,8 +1,8 @@
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, Bool, Date
+import datetime
 from typing import Annotated
 
-import datetime
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import Bool, Date, String, UInt32
 
 
 class User(AnnotatedBaseModel):

@@ -2,12 +2,12 @@
 You can use custom encoder and decoder functions to compress the serialized data of a PyByntic model.
 """
 
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, Bool, Date
-from typing import Annotated
-
 import datetime
 import zlib
+from typing import Annotated
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import Bool, Date, String, UInt32
 
 
 class User(AnnotatedBaseModel):

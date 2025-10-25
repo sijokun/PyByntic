@@ -2,9 +2,10 @@
 PyByntic supports serialization and deserialization of models containing lists
 """
 
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String
 from typing import Annotated
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import String, UInt32
 
 
 class User(AnnotatedBaseModel):

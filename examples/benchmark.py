@@ -9,12 +9,12 @@ This example shoes 7x size reduction when using PyByntic compared to JSON.
 Most of the size reduction comes from PyByntic's efficient binary encoding of integers and dates
 """
 
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, UInt8, String, Bool, Date
-from typing import Annotated
-
 import datetime
 import random
+from typing import Annotated
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import Bool, Date, String, UInt8, UInt32
 
 
 class Category(AnnotatedBaseModel):

@@ -4,29 +4,31 @@ Tests all the types defined in byto.types module.
 """
 
 import datetime
+from typing import Annotated
+
 import pytest
+
 from pybyntic import AnnotatedBaseModel
 from pybyntic.types import (
-    Skip,
     Bool,
+    Date,
+    DateTime32,
+    DateTime64,
+    Float32,
+    Float64,
     Int8,
     Int16,
     Int32,
     Int64,
+    Skip,
+    String,
+    StringJson,
     UInt8,
     UInt16,
     UInt32,
     UInt64,
-    Float32,
-    Float64,
     UInt128,
-    String,
-    StringJson,
-    DateTime32,
-    DateTime64,
-    Date,
 )
-from typing import Annotated
 
 
 class TestIndividualTypes:

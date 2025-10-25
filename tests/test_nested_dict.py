@@ -4,10 +4,12 @@ Based on examples/nested_dict.py
 """
 
 import datetime
-import pytest
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, DateTime32, StringJson
 from typing import Annotated
+
+import pytest
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import DateTime32, StringJson, UInt32
 
 
 class User(AnnotatedBaseModel):

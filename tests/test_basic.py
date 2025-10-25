@@ -4,10 +4,12 @@ Based on examples/basic.py
 """
 
 import datetime
-import pytest
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, Bool, Date
 from typing import Annotated
+
+import pytest
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import Bool, Date, String, UInt32
 
 
 class User(AnnotatedBaseModel):

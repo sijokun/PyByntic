@@ -23,10 +23,10 @@ pip install pybyntic
 poetry install --with dev
 
 # Run tests
-poetry run pytest
+poe test
 
 # Format code
-poetry run black .
+poe autoformat
 ```
 
 ## Usage

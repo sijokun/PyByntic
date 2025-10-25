@@ -3,10 +3,12 @@ Test nested list of models serialization and deserialization functionality.
 Based on examples/nested_list.py
 """
 
-import pytest
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, UInt8
 from typing import Annotated
+
+import pytest
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import String, UInt8, UInt32
 
 
 class Role(AnnotatedBaseModel):

@@ -2,9 +2,10 @@
 You can create PyByntic models with nested lists of other PyByntic models.
 """
 
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, UInt8
 from typing import Annotated
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import String, UInt8, UInt32
 
 
 class Role(AnnotatedBaseModel):

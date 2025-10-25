@@ -2,11 +2,11 @@
 PyByntic supports serialization and deserialization of nested dicts as JSON.
 """
 
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, DateTime32, StringJson
+import datetime
 from typing import Annotated
 
-import datetime
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import DateTime32, StringJson, UInt32
 
 
 class User(AnnotatedBaseModel):

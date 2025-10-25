@@ -5,11 +5,11 @@ This is useful for fields that should not be stored or transmitted.
 Skipped fields should default values that are used during deserialization.
 """
 
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, Bool, Date, Skip
+import datetime
 from typing import Annotated
 
-import datetime
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import Bool, Date, Skip, String, UInt32
 
 
 class User(AnnotatedBaseModel):

@@ -3,10 +3,12 @@ Test list serialization and deserialization functionality.
 Based on examples/list.py
 """
 
-import pytest
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String
 from typing import Annotated
+
+import pytest
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import String, UInt32
 
 
 class User(AnnotatedBaseModel):

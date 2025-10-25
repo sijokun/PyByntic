@@ -3,11 +3,13 @@ Shared fixtures and test configuration for PyByntic tests.
 """
 
 import datetime
-import pytest
 import random
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, Bool, Date, UInt8, DateTime32, StringJson
 from typing import Annotated
+
+import pytest
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import Bool, Date, DateTime32, String, StringJson, UInt8, UInt32
 
 
 class User(AnnotatedBaseModel):
@@ -232,9 +234,9 @@ def test_dicts():
 @pytest.fixture
 def compression_algorithms():
     """Fixture providing compression algorithm pairs."""
-    import zlib
-    import gzip
     import bz2
+    import gzip
+    import zlib
 
     return [
         (zlib.compress, zlib.decompress),

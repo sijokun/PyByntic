@@ -1,12 +1,12 @@
 import typing as tp
-import typing_extensions as te
 from types import GenericAlias
 
+import typing_extensions as te
 from pydantic import BaseModel
 
-from pybyntic.types import Skip
 from pybyntic.data_dumper import DataDumper
 from pybyntic.data_parser import DataParser
+from pybyntic.types import Skip
 
 
 class AnnotatedBaseModel(BaseModel):

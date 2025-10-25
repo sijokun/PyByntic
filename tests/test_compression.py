@@ -3,14 +3,16 @@ Test custom encoder and decoder functionality.
 Based on examples/compression.py
 """
 
-import datetime
-import pytest
-import zlib
-import gzip
 import bz2
-from pybyntic import AnnotatedBaseModel
-from pybyntic.types import UInt32, String, Bool, Date
+import datetime
+import gzip
+import zlib
 from typing import Annotated
+
+import pytest
+
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import Bool, Date, String, UInt32
 
 
 class User(AnnotatedBaseModel):
