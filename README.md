@@ -1,5 +1,11 @@
 # PyByntic
 
+![Tests](https://github.com/sijokun/PyByntic/workflows/Tests/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/sijokun/PyByntic/badge.svg?branch=master)](https://coveralls.io/github/sijokun/PyByntic?branch=master)
+[![PyPI version](https://badge.fury.io/py/PyByntic.svg)](https://badge.fury.io/py/PyByntic)
+[![Downloads](https://static.pepy.tech/personalized-badge/PyByntic?period=total&units=international_system&left_color=grey&right_color=brightgreen&left_text=Downloads)](https://pepy.tech/project/PyByntic)
+
+
 PyByntic extends Pydantic with binary-typed fields and automatic byte-level serialization. Define models using familiar Pydantic syntax and turn them into compact binary payloads with full control over layout and numeric precision.
 
 ## Features

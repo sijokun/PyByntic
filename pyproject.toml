@@ -1,9 +1,21 @@
 [tool.poetry]
 name = "PyByntic"
-version = "0.1.0"
+version = "0.1.1"
 description = "PyByntic extends Pydantic with binary-typed fields and automatic byte-level serialization. Define models using familiar Pydantic syntax and turn them into compact binary payloads with full control over layout and numeric precision."
 authors = ["Yan Khachko <a@slnk.icu>"]
 readme = "README.md"
+license = "GPLv3"
+classifiers = [
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: GNU General Public License v3",
+  "Operating System :: OS Independent",
+  "Framework :: Pydantic",
+  "Topic :: Software Development :: Libraries :: Python Modules"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
