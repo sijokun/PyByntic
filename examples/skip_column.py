@@ -19,9 +19,14 @@ class User(AnnotatedBaseModel):
     is_active: Annotated[bool, Bool]
     join_date: Annotated[datetime.date, Date]
 
+
 def main():
     user = User(
-        user_id=123, username="admin", description="I am root", is_active=True, join_date=datetime.date.today()
+        user_id=123,
+        username="admin",
+        description="I am root",
+        is_active=True,
+        join_date=datetime.date.today(),
     )
 
     print("Original User Model:")

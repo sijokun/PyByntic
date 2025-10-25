@@ -19,7 +19,7 @@ class AnnotatedBaseModel(BaseModel):
         for name, field in cls._get_types():
             value = parser.read(field)
             parsed[name] = value
-        
+
         # Handle Skip fields - they should not be deserialized but need default values
         for name, model_field in cls.model_fields.items():
             if model_field.metadata and model_field.metadata[0] is Skip:
@@ -58,7 +58,7 @@ class AnnotatedBaseModel(BaseModel):
                 else:
                     model_types.append((name, model_field.metadata[0]))
             elif isinstance(annotation, type) and issubclass(
-                    annotation, AnnotatedBaseModel
+                annotation, AnnotatedBaseModel
             ):
                 for field_name, field_type in annotation._get_types():
                     model_types.append((name + "." + field_name, field_type))
@@ -74,35 +74,46 @@ class AnnotatedBaseModel(BaseModel):
 
     @classmethod
     def _normalize_lists(
-            cls,
-            node: tp.Any,
-            path: tuple[str, ...] = (),
-            *,
-            zip_single_key: bool = False,  # set True if you DO want single-key zipping
+        cls,
+        node: tp.Any,
+        path: tuple[str, ...] = (),
+        *,
+        zip_single_key: bool = False,  # set True if you DO want single-key zipping
     ) -> tp.Any:
         if isinstance(node, list):
-            return [cls._normalize_lists(x, path, zip_single_key=zip_single_key) for x in node]
+            return [
+                cls._normalize_lists(x, path, zip_single_key=zip_single_key)
+                for x in node
+            ]
 
         # Dicts: normalize children first
         if isinstance(node, dict):
             for k in list(node.keys()):
-                node[k] = cls._normalize_lists(node[k], path + (k,), zip_single_key=zip_single_key)
+                node[k] = cls._normalize_lists(
+                    node[k], path + (k,), zip_single_key=zip_single_key
+                )
 
             # If all children are lists and (we allow single-key OR there are 2+ keys), zip into list[dict]
             if node:  # non-empty
                 values = list(node.values())
-                if all(isinstance(v, list) for v in values) and (zip_single_key or len(node) > 1):
+                if all(isinstance(v, list) for v in values) and (
+                    zip_single_key or len(node) > 1
+                ):
                     lengths = {len(v) for v in values}
                     if len(lengths) != 1:
                         where = ".".join(path) or "<root>"
-                        raise ValueError(f"Arrays under '{where}' have mismatched lengths: {lengths}")
+                        raise ValueError(
+                            f"Arrays under '{where}' have mismatched lengths: {lengths}"
+                        )
                     n = lengths.pop()
 
                     zipped: list[dict[str, tp.Any]] = []
                     # build entries by taking i-th element from each list
                     for i in range(n):
                         entry = {k: node[k][i] for k in node.keys()}
-                        entry = cls._normalize_lists(entry, path + (f"[{i}]",), zip_single_key=zip_single_key)
+                        entry = cls._normalize_lists(
+                            entry, path + (f"[{i}]",), zip_single_key=zip_single_key
+                        )
                         zipped.append(entry)
                     return zipped
 

@@ -13,7 +13,7 @@ PyByntic extends Pydantic with binary-typed fields and automatic byte-level seri
 ## Installation
 
 ```bash
-poetry install
+pip install pybyntic
 ```
 
 ## Development
@@ -25,14 +25,8 @@ poetry install --with dev
 # Run tests
 poetry run pytest
 
-# Run tests with coverage
-poetry run pytest --cov=byto
-
 # Format code
 poetry run black .
-
-# Run linting
-poetry run poe lint
 ```
 
 ## Usage

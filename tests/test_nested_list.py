@@ -243,6 +243,7 @@ class TestNestedListSerialization:
 
     def test_deeply_nested_lists(self):
         """Test serialization with deeply nested lists."""
+
         # Create a more complex nested structure
         class Permission(AnnotatedBaseModel):
             permission_id: Annotated[int, UInt8]

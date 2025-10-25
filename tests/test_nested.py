@@ -173,6 +173,7 @@ class TestNestedSerialization:
 
     def test_deeply_nested_models(self):
         """Test serialization with deeply nested models."""
+
         # Create a more complex nested structure
         class Permission(AnnotatedBaseModel):
             permission_id: Annotated[int, UInt8]
