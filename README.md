@@ -22,6 +22,13 @@ PyByntic extends Pydantic with binary-typed fields and automatic byte-level seri
 pip install pybyntic
 ```
 
+## Benchmark
+
+<img width="1580" height="980" alt="image" src="https://github.com/user-attachments/assets/7ebff40b-4d53-4195-b674-b9caf0fa2cf0" />
+
+For comparison is based on 2 million user records. Users contain various types such as UInt16, UInt32, Int32, Int64, Bool, Float32, String, and DateTime32. Each user also includes nested objects — roles and permissions, and in some cases, there can be hundreds of permissions. PyByntic gives the smallest memory usage of all tested solutions.
+
+
 ## Development
 
 ```bash
