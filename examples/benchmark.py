@@ -112,7 +112,7 @@ def generate_sample_post() -> Post:
 
 
 def main():
-    size_byto = 0
+    size_pybantic = 0
     size_json = 0
 
     num_samples = 1000
@@ -120,16 +120,15 @@ def main():
     for _ in range(num_samples):
         post = generate_sample_post()
 
-        serialized_byto = post.serialize()
-        size_byto += len(serialized_byto)
+        serialized = post.serialize()
+        size_pybantic += len(serialized)
 
         serialized_json = post.model_dump_json().encode("utf-8")
         size_json += len(serialized_json)
 
-    print(f"Average size using PyByntic: {size_byto / num_samples:.2f} bytes")
+    print(f"Average size using PyByntic: {size_pybantic / num_samples:.2f} bytes")
     print(f"Average size using JSON: {size_json / num_samples:.2f} bytes")
-    print(f"PyByntic is {size_json / size_byto:.2f} times smaller than JSON")
-
+    print(f"PyByntic is {size_json / size_pybantic:.2f} times smaller than JSON")
 
 if __name__ == "__main__":
     main()
