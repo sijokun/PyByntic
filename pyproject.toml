@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "PyByntic"
-version = "0.1.1"
+version = "0.1.2"
 description = "PyByntic extends Pydantic with binary-typed fields and automatic byte-level serialization. Define models using familiar Pydantic syntax and turn them into compact binary payloads with full control over layout and numeric precision."
 authors = ["Yan Khachko <a@slnk.icu>"]
 readme = "README.md"
@@ -30,6 +30,7 @@ black = "^23.7.0"
 poethepoet = "^0.21.1"
 pytest = "^7.4.0"
 isort = "^7.0.0"
+mypy = "^1.18.2"
 
 
 [tool.isort]
@@ -41,9 +42,11 @@ autoformat.sequence = [
     {cmd = "black pybyntic tests examples"},
     {cmd = "isort pybyntic tests examples"},
 ]
-
 test.sequence = [
   {cmd = "pytest"}
+]
+lint.sequence = [
+  {cmd = "mypy pybyntic"}
 ]
 
 [tool.poetry.urls]

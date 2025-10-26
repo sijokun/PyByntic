@@ -130,5 +130,6 @@ def main():
     print(f"Average size using JSON: {size_json / num_samples:.2f} bytes")
     print(f"PyByntic is {size_json / size_pybantic:.2f} times smaller than JSON")
 
+
 if __name__ == "__main__":
     main()

@@ -11,7 +11,9 @@ from pybyntic.types import Skip
 
 class AnnotatedBaseModel(BaseModel):
     @classmethod
-    def deserialize(cls, data: bytes, decoder: tp.Callable = None) -> te.Self:
+    def deserialize(
+        cls, data: bytes, decoder: tp.Optional[tp.Callable] = None
+    ) -> te.Self:
         if decoder:
             data = decoder(data)
         parsed = {}
@@ -26,13 +28,13 @@ class AnnotatedBaseModel(BaseModel):
                 if model_field.default is not None:
                     parsed[name] = model_field.default
                 elif model_field.default_factory is not None:
-                    parsed[name] = model_field.default_factory()
+                    parsed[name] = model_field.default_factory
                 else:
                     parsed[name] = None
         parsed = cls._fix_nested(parsed)
         return cls(**parsed)
 
-    def serialize(self, encoder: tp.Callable = None) -> bytes:
+    def serialize(self, encoder: tp.Optional[tp.Callable] = None) -> bytes:
         dumper = DataDumper()
         for name, field in self._get_types():
             data = self._get_field(name)
@@ -52,7 +54,9 @@ class AnnotatedBaseModel(BaseModel):
             # Check for list-like types
             if isinstance(annotation, GenericAlias) and annotation.__origin__ is list:
                 element_type = annotation.__args__[0]
-                if issubclass(element_type, AnnotatedBaseModel):
+                if isinstance(element_type, type) and issubclass(
+                    element_type, AnnotatedBaseModel
+                ):
                     for field_name, field_type in element_type._get_types():
                         model_types.append((name + "." + field_name, list[field_type]))  # type: ignore
                 else:
