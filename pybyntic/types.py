@@ -99,7 +99,7 @@ class UInt128:
         return (hi << 64) + lo
 
     @classmethod
-    def write(cls, buf: Buffer, value):
+    def write(cls, buf: Buffer, value: int):
         hi = value >> 64
         lo = value & 0xFFFFFFFFFFFFFFFF
         buf.write_formated("Q", hi)
@@ -146,7 +146,7 @@ class FixedString:
         data = buf.read_fixed_str(self.length, self.encoding)
         return data
 
-    def write(self, buf: Buffer, value):
+    def write(self, buf: Buffer, value: str):
         data = value.encode(self.encoding)
         if len(data) > self.length:
             data = data[: self.length]
@@ -163,7 +163,7 @@ class StringJson:
         return json.loads(data if data else "{}")
 
     @classmethod
-    def write(cls, buf: Buffer, value):
+    def write(cls, buf: Buffer, value: dict[str, Any]):
         value = json.dumps(value).encode()
         buf.write_varint(len(value))
         buf.write_bytes(value)
@@ -201,7 +201,7 @@ class DateTime64:
 
         return datetime.fromtimestamp(timestamp, tz=timezone.utc)
 
-    def write(self, buf: Buffer, value):
+    def write(self, buf: Buffer, value: datetime):
         divisor = 10**self.precision
         ticks = int(value.timestamp() * divisor)
         buf.write_formated("Q", ticks)
@@ -213,7 +213,10 @@ class Date:
         return date(1970, 1, 1) + timedelta(days=buf.read_formated("H"))
 
     @classmethod
-    def write(cls, buf: Buffer, value):
+    def write(cls, buf: Buffer, value: date):
+        days = (value - date(1970, 1, 1)).days
+        if days < 0 or days > 2**16 - 1:
+            raise ValueError("Date value out of range for Date type")
         buf.write_formated("H", (value - date(1970, 1, 1)).days)
 
 
