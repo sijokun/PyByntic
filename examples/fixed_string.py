@@ -14,7 +14,7 @@ If string is longer than the fixed length, it will be truncated.
 from typing import Annotated
 
 from pybyntic import AnnotatedBaseModel
-from pybyntic.types import String, UInt32, FixedString
+from pybyntic.types import FixedString, String, UInt32
 
 
 class User(AnnotatedBaseModel):
@@ -25,9 +25,7 @@ class User(AnnotatedBaseModel):
 
 
 def main():
-    user = User(
-        user_id=123, username="admin", language="NE"
-    )
+    user = User(user_id=123, username="admin", language="NE")
 
     print("Original User Model:")
     print(user)

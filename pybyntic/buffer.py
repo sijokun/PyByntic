@@ -45,9 +45,7 @@ class Buffer:
             length -= 1
         return packets
 
-    def read_fixed_str(
-        self, length: int, encoding: str = "utf-8"
-    ) -> str:
+    def read_fixed_str(self, length: int, encoding: str = "utf-8") -> str:
         packet = self.read_bytes(length)
         return packet.decode(encoding=encoding)
 

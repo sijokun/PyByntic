@@ -318,10 +318,10 @@ class TestIndividualTypes:
         model = TestModel(code="abc")
         serialized = model.serialize()
         deserialized = TestModel.deserialize(serialized)
-        
+
         # Should pad with null bytes
         assert len(deserialized.code.encode()) == 5
-        assert deserialized.code.strip('\x00') == "abc"
+        assert deserialized.code.strip("\x00") == "abc"
 
     def test_fixedstring_with_long_string(self):
         """Test FixedString with string longer than fixed length (should truncate)."""
@@ -333,7 +333,7 @@ class TestIndividualTypes:
         model = TestModel(code="longcode")
         serialized = model.serialize()
         deserialized = TestModel.deserialize(serialized)
-        
+
         # Should truncate to 3 bytes
         assert len(deserialized.code.encode()) == 3
         assert deserialized.code == "lon"
@@ -360,7 +360,7 @@ class TestIndividualTypes:
         model2 = TestModel2(code="USA")
         serialized = model2.serialize()
         deserialized = TestModel2.deserialize(serialized)
-        assert deserialized.code.strip('\x00') == "USA"
+        assert deserialized.code.strip("\x00") == "USA"
 
         # Test 10-byte string
         model10 = TestModel10(code="0123456789")
@@ -398,14 +398,10 @@ class TestIndividualTypes:
             currency: Annotated[str, FixedString[3]]
             country: Annotated[str, FixedString[2]]
 
-        model = TestModel(
-            language="en",
-            currency="USD",
-            country="US"
-        )
+        model = TestModel(language="en", currency="USD", country="US")
         serialized = model.serialize()
         deserialized = TestModel.deserialize(serialized)
-        
+
         assert deserialized.language == "en"
         assert deserialized.currency == "USD"
         assert deserialized.country == "US"
@@ -420,7 +416,7 @@ class TestIndividualTypes:
         model = TestModel(text="世界")  # "world" in Chinese
         serialized = model.serialize()
         deserialized = TestModel.deserialize(serialized)
-        assert deserialized.text.strip('\x00').startswith("世")
+        assert deserialized.text.strip("\x00").startswith("世")
 
     def test_fixedstring_empty_string(self):
         """Test FixedString with empty string."""
@@ -431,10 +427,10 @@ class TestIndividualTypes:
         model = TestModel(code="")
         serialized = model.serialize()
         deserialized = TestModel.deserialize(serialized)
-        
+
         # Empty string should be padded with null bytes
         assert len(deserialized.code.encode()) == 5
-        assert deserialized.code.strip('\x00') == ""
+        assert deserialized.code.strip("\x00") == ""
 
     def test_fixedstring_with_other_types(self):
         """Test FixedString combined with other types."""
@@ -446,14 +442,11 @@ class TestIndividualTypes:
             username: Annotated[str, String]
 
         model = TestModel(
-            user_id=12345,
-            language="en",
-            currency="USD",
-            username="test_user"
+            user_id=12345, language="en", currency="USD", username="test_user"
         )
         serialized = model.serialize()
         deserialized = TestModel.deserialize(serialized)
-        
+
         assert deserialized.user_id == 12345
         assert deserialized.language == "en"
         assert deserialized.currency == "USD"
@@ -466,20 +459,22 @@ class TestIndividualTypes:
             # Single ASCII character (1 byte each)
             ascii_text: Annotated[str, FixedString[2]]
             # Multi-byte characters that fit exactly
-            chinese_char: Annotated[str, FixedString[3]]  # Exactly one Chinese character in UTF-8
+            chinese_char: Annotated[
+                str, FixedString[3]
+            ]  # Exactly one Chinese character in UTF-8
 
         # Test ASCII truncation
         model = TestModel(
             ascii_text="AB",  # Exactly 2 bytes
-            chinese_char="你"  # Exactly 3 bytes in UTF-8
+            chinese_char="你",  # Exactly 3 bytes in UTF-8
         )
         serialized = model.serialize()
         deserialized = TestModel.deserialize(serialized)
-        
+
         # ascii_text should be exactly 2 bytes
         assert len(deserialized.ascii_text.encode()) == 2
         assert deserialized.ascii_text == "AB"
-        
+
         # chinese_char should be exactly 3 bytes
         assert len(deserialized.chinese_char.encode()) == 3
         assert deserialized.chinese_char == "你"

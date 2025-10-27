@@ -111,6 +111,7 @@ class String:
     A variable-length string prefixed with its length as a VarInt.
     UTF-8 encoding is used.
     """
+
     @classmethod
     def read(cls, buf: Buffer) -> str:
         length = buf.read_varint()
@@ -128,6 +129,7 @@ class FixedString:
     """
     A fixed-length string of N bytes (not characters).
     """
+
     def __init__(self, length: int, encoding: str = "utf-8"):
         assert length >= 1  # FixedString must have a length of at least 1
 
@@ -164,9 +166,9 @@ class StringJson:
 
     @classmethod
     def write(cls, buf: Buffer, value: dict[str, Any]):
-        value = json.dumps(value).encode()
-        buf.write_varint(len(value))
-        buf.write_bytes(value)
+        data = json.dumps(value).encode()
+        buf.write_varint(len(data))
+        buf.write_bytes(data)
 
 
 class DateTime32:
