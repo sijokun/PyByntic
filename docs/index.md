@@ -60,7 +60,7 @@ deserialized = User.deserialize(serialized)
 
 PyByntic achieves exceptional memory efficiency. Based on 2 million user records containing various types (UInt16, UInt32, Int32, Int64, Bool, Float32, String, DateTime32) with nested objects (roles and permissions), PyByntic provides the smallest memory usage of all tested solutions.
 
-<img width="1580" height="980" alt="benchmark" src="https://github.com/user-attachments/assets/7ebff40b-4d53-4195-b674-b9caf0fa2cf0" />
+<img alt="benchmark" src="https://github.com/user-attachments/assets/7ebff40b-4d53-4195-b674-b9caf0fa2cf0" />
 
 ## Key Concepts
 
