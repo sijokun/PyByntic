@@ -14,6 +14,7 @@ from pybyntic.types import (
     Date,
     DateTime32,
     DateTime64,
+    FixedString,
     Float32,
     Float64,
     Int8,
@@ -292,6 +293,196 @@ class TestIndividualTypes:
             deserialized = TestModel.deserialize(serialized)
             for key in value:
                 assert deserialized.json_field[key] == value[key]
+
+    def test_fixedstring_basic(self):
+        """Test basic FixedString serialization and deserialization."""
+
+        class TestModel(AnnotatedBaseModel):
+            code: Annotated[str, FixedString[2]]
+
+        test_cases = ["US", "CA", "EN", "FR"]
+
+        for value in test_cases:
+            model = TestModel(code=value)
+            serialized = model.serialize()
+            deserialized = TestModel.deserialize(serialized)
+            assert deserialized.code == value
+
+    def test_fixedstring_with_short_string(self):
+        """Test FixedString with string shorter than fixed length (should pad with null bytes)."""
+
+        class TestModel(AnnotatedBaseModel):
+            code: Annotated[str, FixedString[5]]
+
+        # String shorter than 5 bytes - should be padded
+        model = TestModel(code="abc")
+        serialized = model.serialize()
+        deserialized = TestModel.deserialize(serialized)
+        
+        # Should pad with null bytes
+        assert len(deserialized.code.encode()) == 5
+        assert deserialized.code.strip('\x00') == "abc"
+
+    def test_fixedstring_with_long_string(self):
+        """Test FixedString with string longer than fixed length (should truncate)."""
+
+        class TestModel(AnnotatedBaseModel):
+            code: Annotated[str, FixedString[3]]
+
+        # String longer than 3 bytes - should be truncated
+        model = TestModel(code="longcode")
+        serialized = model.serialize()
+        deserialized = TestModel.deserialize(serialized)
+        
+        # Should truncate to 3 bytes
+        assert len(deserialized.code.encode()) == 3
+        assert deserialized.code == "lon"
+
+    def test_fixedstring_various_lengths(self):
+        """Test FixedString with various fixed lengths."""
+
+        class TestModel1(AnnotatedBaseModel):
+            code: Annotated[str, FixedString[1]]
+
+        class TestModel2(AnnotatedBaseModel):
+            code: Annotated[str, FixedString[4]]
+
+        class TestModel10(AnnotatedBaseModel):
+            code: Annotated[str, FixedString[10]]
+
+        # Test 1-byte string
+        model1 = TestModel1(code="A")
+        serialized = model1.serialize()
+        deserialized = TestModel1.deserialize(serialized)
+        assert deserialized.code == "A"
+
+        # Test 4-byte string
+        model2 = TestModel2(code="USA")
+        serialized = model2.serialize()
+        deserialized = TestModel2.deserialize(serialized)
+        assert deserialized.code.strip('\x00') == "USA"
+
+        # Test 10-byte string
+        model10 = TestModel10(code="0123456789")
+        serialized = model10.serialize()
+        deserialized = TestModel10.deserialize(serialized)
+        assert deserialized.code == "0123456789"
+
+    def test_fixedstring_custom_encoding(self):
+        """Test FixedString with custom encodings."""
+
+        class TestModelUTF16(AnnotatedBaseModel):
+            # UTF-16LE: 2 bytes per character, so 4 bytes = 2 characters
+            text: Annotated[str, FixedString[4, "UTF-16LE"]]
+
+        class TestModelASCII(AnnotatedBaseModel):
+            text: Annotated[str, FixedString[5, "ASCII"]]
+
+        # Test UTF-16LE encoding
+        model_utf16 = TestModelUTF16(text="AB")
+        serialized = model_utf16.serialize()
+        deserialized = TestModelUTF16.deserialize(serialized)
+        assert deserialized.text == "AB"
+
+        # Test ASCII encoding
+        model_ascii = TestModelASCII(text="Hello")
+        serialized = model_ascii.serialize()
+        deserialized = TestModelASCII.deserialize(serialized)
+        assert deserialized.text == "Hello"
+
+    def test_fixedstring_with_different_codes(self):
+        """Test FixedString with different types of codes (language, currency, etc)."""
+
+        class TestModel(AnnotatedBaseModel):
+            language: Annotated[str, FixedString[2]]
+            currency: Annotated[str, FixedString[3]]
+            country: Annotated[str, FixedString[2]]
+
+        model = TestModel(
+            language="en",
+            currency="USD",
+            country="US"
+        )
+        serialized = model.serialize()
+        deserialized = TestModel.deserialize(serialized)
+        
+        assert deserialized.language == "en"
+        assert deserialized.currency == "USD"
+        assert deserialized.country == "US"
+
+    def test_fixedstring_unicode_characters(self):
+        """Test FixedString with Unicode characters (encoding matters)."""
+
+        class TestModel(AnnotatedBaseModel):
+            text: Annotated[str, FixedString[6]]
+
+        # Unicode characters take more bytes in UTF-8
+        model = TestModel(text="世界")  # "world" in Chinese
+        serialized = model.serialize()
+        deserialized = TestModel.deserialize(serialized)
+        assert deserialized.text.strip('\x00').startswith("世")
+
+    def test_fixedstring_empty_string(self):
+        """Test FixedString with empty string."""
+
+        class TestModel(AnnotatedBaseModel):
+            code: Annotated[str, FixedString[5]]
+
+        model = TestModel(code="")
+        serialized = model.serialize()
+        deserialized = TestModel.deserialize(serialized)
+        
+        # Empty string should be padded with null bytes
+        assert len(deserialized.code.encode()) == 5
+        assert deserialized.code.strip('\x00') == ""
+
+    def test_fixedstring_with_other_types(self):
+        """Test FixedString combined with other types."""
+
+        class TestModel(AnnotatedBaseModel):
+            user_id: Annotated[int, UInt32]
+            language: Annotated[str, FixedString[2]]
+            currency: Annotated[str, FixedString[3]]
+            username: Annotated[str, String]
+
+        model = TestModel(
+            user_id=12345,
+            language="en",
+            currency="USD",
+            username="test_user"
+        )
+        serialized = model.serialize()
+        deserialized = TestModel.deserialize(serialized)
+        
+        assert deserialized.user_id == 12345
+        assert deserialized.language == "en"
+        assert deserialized.currency == "USD"
+        assert deserialized.username == "test_user"
+
+    def test_fixedstring_truncation_utf8_multibyte(self):
+        """Test FixedString truncation with UTF-8 multi-byte characters."""
+
+        class TestModel(AnnotatedBaseModel):
+            # Single ASCII character (1 byte each)
+            ascii_text: Annotated[str, FixedString[2]]
+            # Multi-byte characters that fit exactly
+            chinese_char: Annotated[str, FixedString[3]]  # Exactly one Chinese character in UTF-8
+
+        # Test ASCII truncation
+        model = TestModel(
+            ascii_text="AB",  # Exactly 2 bytes
+            chinese_char="你"  # Exactly 3 bytes in UTF-8
+        )
+        serialized = model.serialize()
+        deserialized = TestModel.deserialize(serialized)
+        
+        # ascii_text should be exactly 2 bytes
+        assert len(deserialized.ascii_text.encode()) == 2
+        assert deserialized.ascii_text == "AB"
+        
+        # chinese_char should be exactly 3 bytes
+        assert len(deserialized.chinese_char.encode()) == 3
+        assert deserialized.chinese_char == "你"
 
     def test_datetime32_type(self):
         """Test DateTime32 type serialization and deserialization."""

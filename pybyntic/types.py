@@ -28,6 +28,8 @@ class Skip:
 
 
 class Bool:
+    pytype = bool
+
     @classmethod
     def read(cls, buf: Buffer) -> bool:
         return bool(buf.read_formated("b"))
@@ -105,16 +107,51 @@ class UInt128:
 
 
 class String:
+    """
+    A variable-length string prefixed with its length as a VarInt.
+    UTF-8 encoding is used.
+    """
     @classmethod
-    def read(cls, buf: Buffer) -> str | bytes:
+    def read(cls, buf: Buffer) -> str:
         length = buf.read_varint()
         data = buf.read_fixed_str(length)
         return data
 
     @classmethod
-    def write(cls, buf: Buffer, value):
+    def write(cls, buf: Buffer, value: str):
         data = value.encode("utf-8")
         buf.write_varint(len(data))
+        buf.write_bytes(data)
+
+
+class FixedString:
+    """
+    A fixed-length string of N bytes (not characters).
+    """
+    def __init__(self, length: int, encoding: str = "utf-8"):
+        assert length >= 1  # FixedString must have a length of at least 1
+
+        self.length = length
+        self.encoding = encoding
+
+    @classmethod
+    def __class_getitem__(cls, args: int | tuple[int, str]):
+        if isinstance(args, tuple):
+            length, encoding = args
+            return cls(length, encoding)
+        else:
+            return cls(args)
+
+    def read(self, buf: Buffer) -> str:
+        data = buf.read_fixed_str(self.length, self.encoding)
+        return data
+
+    def write(self, buf: Buffer, value):
+        data = value.encode(self.encoding)
+        if len(data) > self.length:
+            data = data[: self.length]
+        elif len(data) < self.length:
+            data += b"\x00" * (self.length - len(data))
         buf.write_bytes(data)
 
 

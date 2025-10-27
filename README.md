@@ -84,26 +84,27 @@ See the `examples/` directory for more comprehensive examples including:
 
 ## Types
 
-| Type Name       | Format / Encoding | Python Type Returned | Notes                                                |
-| --------------- |-------------------|----------------------|------------------------------------------------------|
-| `Skip`          | — (no-op)         | `None`               | Skips field                                          |
-| `Bool`          | `b` (1 byte)      | `bool`               | Writes `1` or `0`                                    |
-| `Int8`          | `b`               | `int`                | Signed 8-bit integer                                 |
-| `Int16`         | `h`               | `int`                | Signed 16-bit integer                                |
-| `Int32`         | `i`               | `int`                | Signed 32-bit integer                                |
-| `Int64`         | `q`               | `int`                | Signed 64-bit integer                                |
-| `UInt8`         | `B`               | `int`                | Unsigned 8-bit integer                               |
-| `UInt16`        | `H`               | `int`                | Unsigned 16-bit integer                              |
-| `UInt32`        | `I`               | `int`                | Unsigned 32-bit integer                              |
-| `UInt64`        | `Q`               | `int`                | Unsigned 64-bit integer                              |
-| `UInt128`       | 2× `Q` (hi/lo)    | `int`                | 128-bit unsigned integer, stored as 2×64-bit         |
-| `Float32`       | `f`               | `float`              | IEEE754 single precision                             |
-| `Float64`       | `d`               | `float`              | IEEE754 double precision                             |
-| `String`        | `varint + bytes`  | `str`                | UTF-8 string, with varint length prefix              |
-| `StringJson`    | `varint + bytes`  | `dict`               | UTF-8 JSON, decoded via `json.loads`                 |
-| `DateTime32`    | `I`               | `datetime` (UTC)     | Seconds since epoch                                  |
-| `DateTime64[p]` | `Q`               | `datetime` (UTC)     | Timestamp in `10^-p` seconds precision (default p=3) |
-| `Date`          | `H`               | `date`               | Days since `1970-01-01`                              |
+| Type Name        | Format / Encoding | Python Type Returned | Notes                                                |
+|------------------|-------------------|----------------------|------------------------------------------------------|
+| `Skip`           | — (no-op)         | `None`               | Skips field                                          |
+| `Bool`           | `b` (1 byte)      | `bool`               | Writes `1` or `0`                                    |
+| `Int8`           | `b`               | `int`                | Signed 8-bit integer                                 |
+| `Int16`          | `h`               | `int`                | Signed 16-bit integer                                |
+| `Int32`          | `i`               | `int`                | Signed 32-bit integer                                |
+| `Int64`          | `q`               | `int`                | Signed 64-bit integer                                |
+| `UInt8`          | `B`               | `int`                | Unsigned 8-bit integer                               |
+| `UInt16`         | `H`               | `int`                | Unsigned 16-bit integer                              |
+| `UInt32`         | `I`               | `int`                | Unsigned 32-bit integer                              |
+| `UInt64`         | `Q`               | `int`                | Unsigned 64-bit integer                              |
+| `UInt128`        | 2× `Q` (hi/lo)    | `int`                | 128-bit unsigned integer, stored as 2×64-bit         |
+| `Float32`        | `f`               | `float`              | IEEE754 single precision                             |
+| `Float64`        | `d`               | `float`              | IEEE754 double precision                             |
+| `String`         | `varint + bytes`  | `str`                | UTF-8 string, with varint length prefix              |
+| `FixedString[n]` | `bytes`           | `str`                | A fixed-length string of N bytes (not characters).   |
+| `StringJson`     | `varint + bytes`  | `dict`               | UTF-8 JSON, decoded via `json.loads`                 |
+| `DateTime32`     | `I`               | `datetime` (UTC)     | Seconds since epoch                                  |
+| `DateTime64[p]`  | `Q`               | `datetime` (UTC)     | Timestamp in `10^-p` seconds precision (default p=3) |
+| `Date`           | `H`               | `date`               | Days since `1970-01-01`                              |
 
 
 ## Implementing Custom Types

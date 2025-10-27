@@ -24,3 +24,5 @@ jobs:
         run: poetry install
       - name: Test
         run: poetry run poe test
+      - name: Lint
+        run: poetry run poe lint

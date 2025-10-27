@@ -46,16 +46,14 @@ class Buffer:
         return packets
 
     def read_fixed_str(
-        self, length: int, as_bytes: bool = False, encoding: str = "utf-8"
-    ) -> str | bytes:
+        self, length: int, encoding: str = "utf-8"
+    ) -> str:
         packet = self.read_bytes(length)
-        if as_bytes:
-            return packet
         return packet.decode(encoding=encoding)
 
-    def read_str(self, as_bytes: bool = False, encoding: str = "utf-8") -> str | bytes:
+    def read_str(self, encoding: str = "utf-8") -> str:
         length = self.read_varint()
-        return self.read_fixed_str(length=length, as_bytes=as_bytes, encoding=encoding)
+        return self.read_fixed_str(length=length, encoding=encoding)
 
     def read_formated(self, fmt: str) -> Any:
         s = struct.Struct("<" + fmt)
