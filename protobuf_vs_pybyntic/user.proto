@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+message Item {
+  uint32 item_id = 1;
+  string type = 2;
+  uint32 rate = 3;
+  sint32 capacity = 4;
+  fixed32 start = 5;
+  fixed32 end = 6;
+  fixed32 updated_at = 7;
+}
+
+message User {
+  int64 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  uint32 referral_count = 4;
+  uint32 mentions_count = 5;
+  int64 balance = 6;
+  double spent = 7;
+  repeated Item items = 8;
+  repeated string tasks = 9;
+  string user_referral_code = 10;
+  fixed32 last_update = 11;
+  uint32 reactions = 12;
+}
