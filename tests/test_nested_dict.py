@@ -250,3 +250,26 @@ class TestNestedDictSerialization:
         deserialized = User.deserialize(serialized)
 
         assert deserialized.flags == edge_flags
+
+    def test_back_compatibility(self):
+        """
+        Test deserialization of previously serialized data for backward compatibility.
+        :return:
+        """
+
+        user = User(user_id=1,
+                    created_at=datetime.datetime(2001, 1, 2, 3, 4,
+                                                 tzinfo=datetime.timezone.utc),
+                    flags={"foo": 1, "bar": 2})
+
+        deserialized = User.deserialize(b'\x01\x00\x00\x00 EQ:\x14{"foo": 1, "bar": 2}')
+
+        assert user.created_at.date() == deserialized.created_at.date()
+        assert user.created_at.hour == deserialized.created_at.hour
+        assert user.created_at.minute == deserialized.created_at.minute
+        assert user.created_at.second == deserialized.created_at.second
+
+        assert user.flags == deserialized.flags
+        assert user.user_id == deserialized.user_id
+
+                # assert deserialized == user

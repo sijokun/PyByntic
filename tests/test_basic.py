@@ -147,3 +147,14 @@ class TestBasicSerialization:
             deserialized = User.deserialize(serialized)
 
             assert deserialized.join_date == test_date
+
+    def test_back_compatibility(self):
+        """
+        Test deserialization of previously serialized data for backward compatibility.
+        :return:
+        """
+        user = User(user_id=1, username="test", is_active=True, join_date=datetime.date(2024, 2, 29))
+
+        deserialized = User.deserialize(b'\x01\x00\x00\x00\x04test\x01FM')
+
+        assert deserialized == user

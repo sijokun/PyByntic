@@ -181,7 +181,31 @@ class DateTime32:
 
     @classmethod
     def write(cls, buf: Buffer, value: datetime):
-        UInt32.write(buf, int(value.timestamp()))
+        if value.utcoffset() is not None and value.utcoffset().total_seconds() > 0:
+            raise ValueError("Use DateTime32TZ for timezone-aware datetime")
+        value = value.astimezone(timezone.utc)
+        ts = int(value.timestamp())
+        if ts < 0 or ts > 2 ** 32 - 1:
+            raise ValueError("DateTime value out of range for DateTime32, use DateTime64 instead")
+        UInt32.write(buf, ts)
+
+
+class DateTime32TZ:
+    @classmethod
+    def read(cls, buf: Buffer) -> datetime:
+        timestamp = UInt32.read(buf)
+        offset_minutes = Int16.read(buf)
+        tz = timezone(timedelta(minutes=offset_minutes))
+        return datetime.fromtimestamp(timestamp, tz=tz)
+
+    @classmethod
+    def write(cls, buf: Buffer, value: datetime):
+        offset = int(value.utcoffset().total_seconds() / 60)
+        ts = int(value.timestamp())
+        if ts < 0 or ts > 2**32 - 1:
+            raise ValueError("DateTime value out of range for DateTime32, use DateTime64 instead")
+        UInt32.write(buf, ts)
+        Int16.write(buf, offset)
 
 
 class DateTime64:
@@ -195,7 +219,7 @@ class DateTime64:
         return cls(precision)
 
     def read(self, buf: Buffer) -> datetime:
-        ticks = buf.read_formated("Q")
+        ticks = Int64.read(buf)
 
         divisor = 10**self.precision
 
@@ -204,9 +228,43 @@ class DateTime64:
         return datetime.fromtimestamp(timestamp, tz=timezone.utc)
 
     def write(self, buf: Buffer, value: datetime):
+        if value.utcoffset().total_seconds():
+            raise ValueError("Use DateTime64TZ for timezone-aware datetime")
+        divisor = 10**self.precision
+        value = value.astimezone(timezone.utc)
+        ticks = int(value.timestamp() * divisor)
+        Int64.write(buf, ticks)
+
+
+class DateTime64TZ:
+    precision = 3
+
+    def __init__(self, precision):
+        self.precision = precision
+
+    @classmethod
+    def __class_getitem__(cls, precision=3):
+        return cls(precision)
+
+    def read(self, buf: Buffer) -> datetime:
+        ticks = Int64.read(buf)
+        offset_minutes = Int16.read(buf)
+        tz = timezone(timedelta(minutes=offset_minutes))
+
+        divisor = 10**self.precision
+
+        timestamp = ticks / divisor
+
+        return datetime.fromtimestamp(timestamp, tz=tz)
+
+    def write(self, buf: Buffer, value: datetime):
+
         divisor = 10**self.precision
         ticks = int(value.timestamp() * divisor)
-        buf.write_formated("Q", ticks)
+
+        offset = int(value.utcoffset().total_seconds() / 60)
+        Int64.write(buf, ticks)
+        Int16.write(buf, offset)
 
 
 class Date:

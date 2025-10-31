@@ -365,6 +365,82 @@ precise: Annotated[datetime.datetime, DateTime64[6]]
 ultra_precise: Annotated[datetime.datetime, DateTime64[9]]
 ```
 
+### `DateTime32TZ`
+
+Timezone-aware timestamp stored as seconds since Unix epoch, with timezone offset.
+
+```python
+from pybyntic.types import DateTime32TZ
+import datetime
+
+class Event(AnnotatedBaseModel):
+    created_at: Annotated[datetime.datetime, DateTime32TZ]
+```
+
+**Format:** `I` (4 bytes - seconds since epoch) + `h` (2 bytes - timezone offset in minutes)  
+**Python Type:** `datetime.datetime` (timezone-aware)  
+**Epoch:** 1970-01-01 00:00:00 UTC  
+**Range:** Up to 2038 (Year 2038 problem)  
+**Timezone Storage:** UTC offset in minutes (not timezone name)
+
+**Important Notes:**
+- The timezone offset is stored as minutes from UTC, not as a named timezone (e.g., "America/New_York")
+- During deserialization, the exact timezone name is not preserved, but the correct UTC offset is maintained
+- The offset may vary with daylight saving time changes
+- If you need to preserve the exact timezone name, save UTC time and the timezone separately
+
+**Example:**
+```python
+import zoneinfo
+
+created_at = datetime.datetime.now().astimezone(zoneinfo.ZoneInfo("America/New_York"))
+event = Event(created_at=created_at)
+
+# After serialization/deserialization, the offset is preserved
+# but the timezone name may be different
+```
+
+### `DateTime64TZ[precision]`
+
+High-precision timezone-aware timestamp with configurable precision.
+
+```python
+from pybyntic.types import DateTime64TZ
+import datetime
+
+class Event(AnnotatedBaseModel):
+    # Millisecond precision (default)
+    created_at: Annotated[datetime.datetime, DateTime64TZ]
+    
+    # Microsecond precision
+    precise_time: Annotated[datetime.datetime, DateTime64TZ[6]]
+```
+
+**Parameters:**
+- `precision` (int): Decimal places (default: 3 for milliseconds)
+
+**Format:** `Q` (8 bytes - timestamp ticks) + `h` (2 bytes - timezone offset in minutes)  
+**Python Type:** `datetime.datetime` (timezone-aware)  
+**Default Precision:** 3 (milliseconds)  
+**Storage:** `timestamp × 10^precision` converted to int + timezone offset in minutes
+
+**Important Notes:**
+- Similar to `DateTime32TZ`, the timezone offset is stored as minutes from UTC
+- The timezone name is not preserved during serialization
+- Supports higher precision than `DateTime32TZ`
+
+**Examples:**
+```python
+# Millisecond precision (default)
+created_at: Annotated[datetime.datetime, DateTime64TZ]
+
+# Microsecond precision
+precise: Annotated[datetime.datetime, DateTime64TZ[6]]
+
+# Nanosecond precision
+ultra_precise: Annotated[datetime.datetime, DateTime64TZ[9]]
+```
+
 ---
 
 ## Special Types
@@ -401,8 +477,8 @@ class User(AnnotatedBaseModel):
 ### For Dates and Times
 
 - Dates: `Date` (2 bytes, ~82 year range)
-- Timestamps (second precision): `DateTime32` (4 bytes)
-- Precise timestamps: `DateTime64` or `DateTime64[6]` (8 bytes)
+- Timestamps (second precision): `DateTime32` (4 bytes) or `DateTime32TZ` (6 bytes, with timezone)
+- Precise timestamps: `DateTime64` or `DateTime64[6]` (8 bytes) or `DateTime64TZ` / `DateTime64TZ[6]` (10 bytes, with timezone)
 
 ### For Text
 
@@ -440,7 +516,9 @@ class User(AnnotatedBaseModel):
 | `FixedString[n]` | `bytes`           | n     | `str`            | Fixed-length string of N bytes            |
 | `StringJson`     | varint + bytes    | var   | `dict`           | UTF-8 JSON, decoded via `json.loads`      |
 | `DateTime32`     | `I`               | 4     | `datetime` (UTC) | Seconds since epoch                        |
+| `DateTime32TZ`   | `I` + `h`         | 6     | `datetime` (TZ)  | Seconds since epoch + timezone offset      |
 | `DateTime64[p]`  | `Q`               | 8     | `datetime` (UTC) | Timestamp in `10^-p` seconds precision     |
+| `DateTime64TZ[p]`| `Q` + `h`         | 10    | `datetime` (TZ)  | Timestamp in `10^-p` seconds + timezone offset |
 | `Date`           | `H`               | 2     | `date`           | Days since `1970-01-01`                    |
 
 ---

@@ -169,3 +169,14 @@ class TestListSerialization:
 
             assert deserialized.roles == roles
             assert len(deserialized.roles) == len(roles)
+
+    def test_back_compatibility(self):
+        """
+        Test deserialization of previously serialized data for backward compatibility.
+        :return:
+        """
+        user = User(user_id=1, username="test_user", roles=['foo', 'bar', 'baz', 'qux'])
+
+        deserialized = User.deserialize(b'\x01\x00\x00\x00\ttest_user\x04\x03foo\x03bar\x03baz\x03qux')
+
+        assert deserialized == user

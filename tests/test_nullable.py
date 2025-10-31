@@ -34,6 +34,21 @@ def test_null():
     _test_user(user)
 
 
+def test_null_back_compatibility():
+    user = User(user_id=123, username=None)
+
+    deserialized_user = User.deserialize(b'{\x00\x00\x00\x01')
+
+    # Verify all fields match
+    assert deserialized_user.user_id == user.user_id
+    assert deserialized_user.username == user.username
+
+    # Verify the objects are equal
+    assert deserialized_user == user
+
+    _test_user(user)
+
+
 class Post(AnnotatedBaseModel):
     post_id: Annotated[int, UInt32]
     tags: Annotated[list[Optional[str]], list[Nullable[String]]]
@@ -71,4 +86,21 @@ def test_list_all_null():
 
 def test_list_empty():
     post = Post(post_id=4, tags=[])
+    _test_post(post)
+
+
+def test_list_null_back_compatibility():
+    post = Post(post_id=2, tags=["red", None, "blue", None])
+
+    deserialized_post = Post.deserialize(
+        b'\x02\x00\x00\x00\x04\x00\x03red\x01\x00\x04blue\x01'
+    )
+
+    # Verify all fields match
+    assert deserialized_post.post_id == post.post_id
+    assert deserialized_post.tags == post.tags
+
+    # Verify the objects are equal
+    assert deserialized_post == post
+
     _test_post(post)

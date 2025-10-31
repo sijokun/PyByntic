@@ -13,7 +13,9 @@ from pybyntic.types import (
     Bool,
     Date,
     DateTime32,
+    DateTime32TZ,
     DateTime64,
+    DateTime64TZ,
     FixedString,
     Float32,
     Float64,
@@ -522,6 +524,55 @@ class TestIndividualTypes:
             deserialized = TestModel.deserialize(serialized)
             # DateTime64 with 3 decimal places should preserve milliseconds
             assert abs((deserialized.datetime_field - value).total_seconds()) < 0.001
+
+    def test_datetime32tz_type(self):
+        """Test DateTime32TZ type serialization and deserialization with timezone."""
+
+        class TestModel(AnnotatedBaseModel):
+            datetime_field: Annotated[datetime.datetime, DateTime32TZ]
+
+        # Test different timezones
+        test_cases = [
+            datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc),  # UTC
+            datetime.datetime(2024, 1, 1, 12, 0, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=-5))),  # EST (UTC-5)
+            datetime.datetime(2024, 6, 1, 12, 0, 0, tzinfo=datetime.timezone(datetime.timedelta(hours=9))),  # JST (UTC+9)
+            datetime.datetime(2024, 2, 29, 12, 30, 45, tzinfo=datetime.timezone(datetime.timedelta(hours=-8))),  # PST (UTC-8)
+        ]
+
+        for value in test_cases:
+            model = TestModel(datetime_field=value)
+            serialized = model.serialize()
+            deserialized = TestModel.deserialize(serialized)
+            # DateTime32TZ stores seconds (no microseconds), so we check approximate equality
+            # Check that the datetime is within 1 second and timezone offset is preserved
+            assert abs((deserialized.datetime_field - value).total_seconds()) < 1.0
+            # Verify timezone offset is preserved (rounded to minutes)
+            assert abs(deserialized.datetime_field.utcoffset().total_seconds() - value.utcoffset().total_seconds()) < 60
+
+    def test_datetime64tz_type(self):
+        """Test DateTime64TZ type serialization and deserialization with timezone."""
+
+        class TestModel(AnnotatedBaseModel):
+            datetime_field: Annotated[
+                datetime.datetime, DateTime64TZ[3]
+            ]  # 3 decimal places
+
+        # Test different timezones with precision
+        test_cases = [
+            datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc),  # UTC
+            datetime.datetime(2024, 1, 1, 12, 0, 0, 123000, tzinfo=datetime.timezone(datetime.timedelta(hours=-5))),  # EST with milliseconds
+            datetime.datetime(2024, 6, 1, 12, 0, 0, 456000, tzinfo=datetime.timezone(datetime.timedelta(hours=9))),  # JST with milliseconds
+            datetime.datetime(2024, 2, 29, 12, 30, 45, 789000, tzinfo=datetime.timezone(datetime.timedelta(hours=-8))),  # PST with milliseconds
+        ]
+
+        for value in test_cases:
+            model = TestModel(datetime_field=value)
+            serialized = model.serialize()
+            deserialized = TestModel.deserialize(serialized)
+            # DateTime64TZ with 3 decimal places should preserve milliseconds
+            assert abs((deserialized.datetime_field - value).total_seconds()) < 0.001
+            # Verify timezone offset is preserved (rounded to minutes)
+            assert abs(deserialized.datetime_field.utcoffset().total_seconds() - value.utcoffset().total_seconds()) < 60
 
     def test_date_type(self):
         """Test Date type serialization and deserialization."""

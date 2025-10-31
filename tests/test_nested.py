@@ -231,3 +231,14 @@ class TestNestedSerialization:
 
             assert deserialized.role.role_id == role_data["role_id"]
             assert deserialized.role.role_name == role_data["role_name"]
+
+    def test_back_compatibility(self):
+        """
+        Test deserialization of previously serialized data for backward compatibility.
+        :return:
+        """
+        user = User(user_id=1, username="test_user", role=Role(role_id=1, role_name="admin"))
+
+        deserialized = User.deserialize(b'\x01\x00\x00\x00\ttest_user\x01\x05admin')
+
+        assert deserialized == user

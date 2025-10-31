@@ -481,6 +481,49 @@ serialized = event.serialize()
 restored = Event.deserialize(serialized)
 ```
 
+### Timezone-Aware Timestamps
+
+Use `DateTime32TZ` or `DateTime64TZ` to store timestamps with timezone information:
+
+```python
+from pybyntic import AnnotatedBaseModel
+from pybyntic.types import DateTime32TZ, DateTime64TZ, UInt32
+from typing import Annotated
+import datetime
+import zoneinfo
+
+
+class Event(AnnotatedBaseModel):
+    event_id: Annotated[int, UInt32]
+    
+    # Second precision with timezone
+    created_at: Annotated[datetime.datetime, DateTime32TZ]
+    
+    # Millisecond precision with timezone
+    processed_at: Annotated[datetime.datetime, DateTime64TZ[3]]
+
+
+# Create event with timezone-aware timestamps
+event = Event(
+    event_id=1,
+    created_at=datetime.datetime.now().astimezone(zoneinfo.ZoneInfo("America/New_York")),
+    processed_at=datetime.datetime.now().astimezone(zoneinfo.ZoneInfo("Asia/Tokyo"))
+)
+
+# Serialize and deserialize
+serialized = event.serialize()
+restored = Event.deserialize(serialized)
+
+# Note: The timezone offset is preserved, but the timezone name may differ
+# The offset will be correct, but it may be represented as a fixed offset
+# instead of the original named timezone (e.g., "America/New_York")
+```
+
+**Important:** Timezone-aware types store the UTC offset in minutes, not the timezone name. This means:
+- The correct UTC offset is preserved
+- The exact timezone name (like "America/New_York") is not preserved
+- If you need to preserve the timezone name, store UTC time and the timezone separately
+
 ### Large Numbers
 
 ```python
