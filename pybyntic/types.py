@@ -181,7 +181,8 @@ class DateTime32:
 
     @classmethod
     def write(cls, buf: Buffer, value: datetime):
-        if value.utcoffset() is not None and value.utcoffset().total_seconds() > 0:
+        offset = value.utcoffset()
+        if offset is not None and offset.total_seconds() > 0:
             raise ValueError("Use DateTime32TZ for timezone-aware datetime")
         value = value.astimezone(timezone.utc)
         ts = int(value.timestamp())
@@ -200,7 +201,10 @@ class DateTime32TZ:
 
     @classmethod
     def write(cls, buf: Buffer, value: datetime):
-        offset = int(value.utcoffset().total_seconds() / 60)
+        offset_td = value.utcoffset()
+        if offset_td is None:
+            raise ValueError("DateTime32TZ requires timezone-aware datetime")
+        offset = int(offset_td.total_seconds() / 60)
         ts = int(value.timestamp())
         if ts < 0 or ts > 2**32 - 1:
             raise ValueError("DateTime value out of range for DateTime32, use DateTime64 instead")
@@ -228,7 +232,8 @@ class DateTime64:
         return datetime.fromtimestamp(timestamp, tz=timezone.utc)
 
     def write(self, buf: Buffer, value: datetime):
-        if value.utcoffset().total_seconds():
+        offset = value.utcoffset()
+        if offset is not None and offset.total_seconds():
             raise ValueError("Use DateTime64TZ for timezone-aware datetime")
         divisor = 10**self.precision
         value = value.astimezone(timezone.utc)
@@ -262,7 +267,10 @@ class DateTime64TZ:
         divisor = 10**self.precision
         ticks = int(value.timestamp() * divisor)
 
-        offset = int(value.utcoffset().total_seconds() / 60)
+        offset_td = value.utcoffset()
+        if offset_td is None:
+            raise ValueError("DateTime64TZ requires timezone-aware datetime")
+        offset = int(offset_td.total_seconds() / 60)
         Int64.write(buf, ticks)
         Int16.write(buf, offset)
 
