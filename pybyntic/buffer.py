@@ -54,6 +54,8 @@ class Buffer:
         return self.read_fixed_str(length=length, encoding=encoding)
 
     def read_formated(self, fmt: str) -> Any:
+        if not self.is_buffer_readable():
+            return 0
         s = struct.Struct("<" + fmt)
         packet = self.read_bytes(s.size)
         return s.unpack(packet)[0]
