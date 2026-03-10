@@ -31,6 +31,8 @@ class Buffer:
             packets.append(packet)
             if packet < 0x80:
                 break
+        if not packets:
+            return 0
         return leb128.u.decode(packets)  # type: ignore
 
     def read_bytes(self, length: int) -> bytearray:
