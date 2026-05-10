@@ -9,9 +9,6 @@ class Buffer:
     def __init__(self, data: bytes):
         self.buffer = bytearray(data)
 
-    def _is_buffer_empty(self) -> bool:
-        return len(self.buffer) == 0
-
     def is_buffer_readable(self) -> bool:
         if len(self.buffer) == 0:
             return False
